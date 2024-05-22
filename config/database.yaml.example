@@ -1,0 +1,32 @@
+database:
+  - databaseConnectionName: one
+    host: 1.1.1.1
+    port: 3308
+    user: user
+    password: pass
+    database: database
+    charset: utf8
+
+  - databaseConnectionName: two
+    host: 1.1.1.1
+    port: 3308
+    user: user
+    password: pass
+    database: database
+    charset: utf8
+
+
+elasticsearch:
+  - databaseConnectionName: one
+    host: https://user:pass@address:9200
+    ignoreSSL: true
+    isDefault: false
+    SocksProxy: "localhost:9901"
+    ver: 5
+
+  - databaseConnectionName: two
+    host: https://user:pass@address:9200
+    ignoreSSL: true
+    isDefault: true
+    SocksProxy: "localhost:9901"
+    ver: 8
