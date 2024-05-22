@@ -10,7 +10,7 @@ import (
 
 type DatabaseConfig struct {
 	DatabaseName string `yaml:"databaseConnectionName" validate:"required"`
-	Host         string `yaml:"host" validate:"required,ip"`
+	Host         string `yaml:"host" validate:"required"`
 	Port         string `yaml:"port" validate:"required"`
 	User         string `yaml:"user" validate:"required"`
 	Password     string `yaml:"password" validate:"required"`
