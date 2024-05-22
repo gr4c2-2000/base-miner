@@ -1,4 +1,4 @@
-package esconnection
+package elasticsearch
 
 import (
 	"bytes"

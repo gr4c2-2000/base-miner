@@ -5,12 +5,12 @@ import (
 	"github.com/gr4c2-2000/base-miner/pkg/mysql"
 )
 
-type MysqlRepository struct {
-	mysql.MySqlGateway
+type Mysql struct {
+	*mysql.MySqlConnector
 }
 
-func (mr *MysqlRepository) QueryFromFile(query data.QueryInterface) error {
-	err := mr.MySqlGateway.Query(query.GetDataSource(), query.GetQuery(), query.Recive(), query.GetArgs()...)
+func (mr *Mysql) QueryFromFile(query data.QueryInterface) error {
+	err := mr.MySqlConnector.Query(query.GetDataSource(), query.GetQuery(), query.Recive(), query.GetArgs()...)
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package esconnection
+package elasticsearch
 
 import (
 	"github.com/gr4c2-2000/base-miner/pkg/config"
@@ -7,11 +7,11 @@ import (
 	"github.com/rotisserie/eris"
 )
 
-type EsMap map[string]*ElasticSearchGatway
+type EsMap map[string]*ElasticSearchConnector
 
-func InitES(Config *config.DataSource) EsMap {
+func Init(Config *config.DataSource) EsMap {
 
-	EsConnectionsArray := make(map[string]*ElasticSearchGatway, 0)
+	EsConnectionsArray := make(map[string]*ElasticSearchConnector, 0)
 	var es ElasticSearchInterface
 	for _, esConfig := range Config.ElasticSearch {
 		switch esConfig.Version {
@@ -26,13 +26,13 @@ func InitES(Config *config.DataSource) EsMap {
 		es.SetConfig(Config)
 		es.SetESConfig(&esConfig)
 		es.setConnection()
-		ElasticSearchService := ElasticSearchGatway{Config, es}
+		ElasticSearchService := ElasticSearchConnector{Config, es}
 		EsConnectionsArray[esConfig.DatabaseName] = &ElasticSearchService
 	}
 	return EsConnectionsArray
 }
 
-func (em EsMap) GetConnectionByName(Name string) (*ElasticSearchGatway, error) {
+func (em EsMap) GetConnectionByName(Name string) (*ElasticSearchConnector, error) {
 	val, ok := em[Name]
 	if !ok {
 		return nil, eris.New("No ES Connection with specified Name")

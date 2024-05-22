@@ -1,4 +1,4 @@
-package esconnection
+package elasticsearch
 
 type ResposeES struct {
 	Hits        Hits        `json:"hits"`

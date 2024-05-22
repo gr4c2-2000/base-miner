@@ -1,4 +1,4 @@
-package esconnection
+package elasticsearch
 
 import (
 	"bytes"
@@ -9,12 +9,12 @@ import (
 	"github.com/rotisserie/eris"
 )
 
-type ElasticSearchGatway struct {
+type ElasticSearchConnector struct {
 	config      *config.DataSource
 	esInterface ElasticSearchInterface
 }
 
-func (e *ElasticSearchGatway) Replace(Index string, Type string, Id string, query map[string]interface{}) error {
+func (e *ElasticSearchConnector) Replace(Index string, Type string, Id string, query map[string]interface{}) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
@@ -28,7 +28,7 @@ func (e *ElasticSearchGatway) Replace(Index string, Type string, Id string, quer
 	return nil
 }
 
-func (e *ElasticSearchGatway) ExecuteQuery(Index string, Type string, query map[string]interface{}) (*ResposeES, error) {
+func (e *ElasticSearchConnector) ExecuteQuery(Index string, Type string, query map[string]interface{}) (*ResposeES, error) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		return nil, eris.Wrapf(err, "")

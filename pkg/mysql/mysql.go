@@ -10,18 +10,18 @@ import (
 	"github.com/rotisserie/eris"
 )
 
-type MySqlGateway struct {
+type MySqlConnector struct {
 	config           *config.DataSource
 	mysqlConnections map[string]*sql.DB
 }
 
-func InitMySql(Config *config.DataSource) *MySqlGateway {
-	msq := MySqlGateway{}
+func Init(Config *config.DataSource) *MySqlConnector {
+	msq := MySqlConnector{}
 	msq.config = Config
 	msq.mysqlConnections = make(map[string]*sql.DB)
 	return &msq
 }
-func (m *MySqlGateway) Query(ConnectionName string, query string, reciver interface{}, args ...interface{}) error {
+func (m *MySqlConnector) Query(ConnectionName string, query string, reciver interface{}, args ...interface{}) error {
 
 	stmt, err := m.prepare(ConnectionName, query)
 	if err != nil {
@@ -39,7 +39,7 @@ func (m *MySqlGateway) Query(ConnectionName string, query string, reciver interf
 	return nil
 }
 
-func (m *MySqlGateway) QueryToMapWithArgs(ConnectionName string, query string, args ...interface{}) ([]map[string]interface{}, error) {
+func (m *MySqlConnector) QueryToMapWithArgs(ConnectionName string, query string, args ...interface{}) ([]map[string]interface{}, error) {
 
 	stmt, err := m.prepare(ConnectionName, query)
 	if err != nil {
@@ -76,7 +76,7 @@ func (m *MySqlGateway) QueryToMapWithArgs(ConnectionName string, query string, a
 	return Result, nil
 }
 
-func (m *MySqlGateway) Insert(ConnectionName string, query string, args ...interface{}) (int64, error) {
+func (m *MySqlConnector) Insert(ConnectionName string, query string, args ...interface{}) (int64, error) {
 	db, err := m.connection(ConnectionName)
 
 	if err != nil {
@@ -98,7 +98,7 @@ func (m *MySqlGateway) Insert(ConnectionName string, query string, args ...inter
 
 	return lastID, nil
 }
-func (m *MySqlGateway) prepare(ConnectionName string, query string) (*sql.Stmt, error) {
+func (m *MySqlConnector) prepare(ConnectionName string, query string) (*sql.Stmt, error) {
 	db, err := m.connection(ConnectionName)
 	if err != nil {
 		return nil, eris.Wrapf(err, "")
@@ -111,7 +111,7 @@ func (m *MySqlGateway) prepare(ConnectionName string, query string) (*sql.Stmt, 
 	return stmt, nil
 }
 
-func (m *MySqlGateway) connection(ConnectionName string) (*sql.DB, error) {
+func (m *MySqlConnector) connection(ConnectionName string) (*sql.DB, error) {
 	val, ok := m.mysqlConnections[ConnectionName]
 	if ok && val.Ping() == nil {
 		return m.mysqlConnections[ConnectionName], nil
@@ -124,7 +124,7 @@ func (m *MySqlGateway) connection(ConnectionName string) (*sql.DB, error) {
 	return m.mysqlConnections[ConnectionName], nil
 }
 
-func (m *MySqlGateway) getConnection(ConnectionName string) (*sql.DB, error) {
+func (m *MySqlConnector) getConnection(ConnectionName string) (*sql.DB, error) {
 	dbConfig, err := m.config.FindConnectionByName(ConnectionName)
 	if err != nil {
 		return nil, eris.Wrapf(err, "")
@@ -139,7 +139,7 @@ func (m *MySqlGateway) getConnection(ConnectionName string) (*sql.DB, error) {
 	return db, nil
 }
 
-func (m *MySqlGateway) setConnection(ConnectionName string) error {
+func (m *MySqlConnector) setConnection(ConnectionName string) error {
 	con, err := m.getConnection(ConnectionName)
 	if err != nil {
 		return eris.Wrapf(err, "")
