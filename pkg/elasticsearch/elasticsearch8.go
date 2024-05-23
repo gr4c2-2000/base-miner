@@ -81,6 +81,19 @@ func (e *ElasticSearchGatway8) Replace(ctx context.Context, index string, docTyp
 	return nil
 }
 
+func (e *ElasticSearchGatway8) Create(ctx context.Context, index string, docType string, document io.Reader) error {
+
+	res, err := e.client.Index(index, document, e.client.Index.WithContext(ctx))
+	if err != nil {
+		return eris.Wrapf(err, "")
+	}
+	defer res.Body.Close()
+	if res.IsError() {
+		return eris.New(res.String())
+	}
+	return nil
+}
+
 func (e *ElasticSearchGatway8) Search(ctx context.Context, index string, docType string, query io.Reader) (*bytes.Buffer, error) {
 	res, err := e.client.Search(
 		e.client.Search.WithContext(ctx),

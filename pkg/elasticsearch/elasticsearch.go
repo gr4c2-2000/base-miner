@@ -27,6 +27,18 @@ func (e *ElasticSearchConnector) Replace(Index string, Type string, Id string, q
 	}
 	return nil
 }
+func (e *ElasticSearchConnector) Create(ctx context.Context, index string, docType string, query map[string]interface{}) error {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		return eris.Wrapf(err, "")
+	}
+
+	err := e.esInterface.Create(context.Background(), index, docType, &buf)
+	if err != nil {
+		return eris.Wrapf(err, "")
+	}
+	return nil
+}
 
 func (e *ElasticSearchConnector) ExecuteQuery(Index string, Type string, query map[string]interface{}) (*ResposeES, error) {
 	var buf bytes.Buffer

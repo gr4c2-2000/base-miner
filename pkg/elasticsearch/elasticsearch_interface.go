@@ -15,6 +15,7 @@ type ElasticSearchInterface interface {
 	GetESConfig() *config.ElasticSearchConfig
 	Search(ctx context.Context, index string, docType string, query io.Reader) (*bytes.Buffer, error)
 	Replace(ctx context.Context, index string, docType string, id string, document io.Reader) error
+	Create(ctx context.Context, index string, docType string, document io.Reader) error
 	getDialerContext() func(ctx context.Context, network, address string) (net.Conn, error)
 	setConnection()
 }
