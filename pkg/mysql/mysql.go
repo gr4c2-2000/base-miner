@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,6 +13,7 @@ import (
 
 type MySqlConnector struct {
 	config           *config.DataSource
+	sync             sync.RWMutex
 	mysqlConnections map[string]*sql.DB
 }
 
@@ -112,15 +114,18 @@ func (m *MySqlConnector) prepare(ConnectionName string, query string) (*sql.Stmt
 }
 
 func (m *MySqlConnector) connection(ConnectionName string) (*sql.DB, error) {
+	m.sync.RLock()
 	val, ok := m.mysqlConnections[ConnectionName]
+	m.sync.RUnlock()
 	if ok && val.Ping() == nil {
-		return m.mysqlConnections[ConnectionName], nil
+		return val, nil
 	}
-
 	err := m.setConnection(ConnectionName)
 	if err != nil {
 		return nil, eris.Wrapf(err, "")
 	}
+	m.sync.RLock()
+	defer m.sync.RUnlock()
 	return m.mysqlConnections[ConnectionName], nil
 }
 
@@ -140,10 +145,13 @@ func (m *MySqlConnector) getConnection(ConnectionName string) (*sql.DB, error) {
 }
 
 func (m *MySqlConnector) setConnection(ConnectionName string) error {
+
 	con, err := m.getConnection(ConnectionName)
 	if err != nil {
 		return eris.Wrapf(err, "")
 	}
+	m.sync.Lock()
+	defer m.sync.Unlock()
 	m.mysqlConnections[ConnectionName] = con
 	return nil
 }
