@@ -103,7 +103,7 @@ func (e *ElasticSearchGatway5) BulkIndexDocuments(ctx context.Context, index str
 
 	for _, doc := range documents {
 		// Meta line for each bulk operation
-		meta := []byte(fmt.Sprintf(`{ "index" : { "_index": "%s", "_type": "%s", "_id": "%s" } }%s`, index, docType, doc["id"], "\n"))
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index": "%s", "_type": "%s", "_id": "%v" } }%s`, index, docType, doc["id"], "\n"))
 		buf.Write(meta)
 
 		// Document data

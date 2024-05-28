@@ -99,7 +99,7 @@ func (e *ElasticSearchGatway8) Create(ctx context.Context, index string, docType
 func (e *ElasticSearchGatway8) BulkIndexDocuments(ctx context.Context, index string, docType string, documents []map[string]interface{}) error {
 	var buf bytes.Buffer
 	for _, doc := range documents {
-		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%s" } }%s`, doc["id"], "\n"))
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%v" } }%s`, doc["id"], "\n"))
 		data, err := json.Marshal(doc)
 		if err != nil {
 			return err
