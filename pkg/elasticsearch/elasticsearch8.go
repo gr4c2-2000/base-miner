@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -90,6 +92,36 @@ func (e *ElasticSearchGatway8) Create(ctx context.Context, index string, docType
 	defer res.Body.Close()
 	if res.IsError() {
 		return eris.New(res.String())
+	}
+	return nil
+}
+
+func (e *ElasticSearchGatway8) BulkIndexDocuments(ctx context.Context, index string, docType string, documents []map[string]interface{}) error {
+	var buf bytes.Buffer
+	for _, doc := range documents {
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%s" } }%s`, doc["id"], "\n"))
+		data, err := json.Marshal(doc)
+		if err != nil {
+			return err
+		}
+		data = append(data, "\n"...)
+		buf.Write(meta)
+		buf.Write(data)
+	}
+
+	req := esapi.BulkRequest{
+		Index:   index,
+		Body:    &buf,
+		Refresh: "true",
+	}
+	res, err := req.Do(ctx, e.client)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		return fmt.Errorf("error response status: %s", res.String())
 	}
 	return nil
 }

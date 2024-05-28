@@ -40,6 +40,10 @@ func (e *ElasticSearchConnector) Create(ctx context.Context, index string, docTy
 	return nil
 }
 
+func (e *ElasticSearchConnector) BulkIndexDocuments(index string, docType string, documents []map[string]interface{}) error {
+	return e.esInterface.BulkIndexDocuments(context.Background(), index, docType, documents)
+}
+
 func (e *ElasticSearchConnector) ExecuteQuery(Index string, Type string, query map[string]interface{}) (*ResposeES, error) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -91,6 +93,40 @@ func (e *ElasticSearchGatway5) Create(ctx context.Context, index string, docType
 	defer res.Body.Close()
 	if res.IsError() {
 		return eris.New(res.String())
+	}
+	return nil
+}
+
+func (e *ElasticSearchGatway5) BulkIndexDocuments(ctx context.Context, index string, docType string, documents []map[string]interface{}) error {
+	// Create a buffer for the bulk request body
+	var buf bytes.Buffer
+
+	for _, doc := range documents {
+		// Meta line for each bulk operation
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index": "%s", "_type": "%s", "_id": "%s" } }%s`, index, docType, doc["id"], "\n"))
+		buf.Write(meta)
+
+		// Document data
+		data, err := json.Marshal(doc)
+		if err != nil {
+			return err
+		}
+		data = append(data, '\n')
+		buf.Write(data)
+	}
+
+	// Perform the bulk request
+	req := esapi.BulkRequest{
+		Body: &buf,
+	}
+	res, err := req.Do(ctx, e.client)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		return fmt.Errorf("bulk indexing error: %s", res.String())
 	}
 	return nil
 }
