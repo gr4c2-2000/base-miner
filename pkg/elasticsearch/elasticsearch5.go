@@ -152,3 +152,19 @@ func (e *ElasticSearchGatway5) Search(ctx context.Context, index string, docType
 	bufResponse.ReadFrom(res.Body)
 	return bufResponse, nil
 }
+
+func (e *ElasticSearchGatway5) GetById(ctx context.Context, index string, docType string, id string) (*bytes.Buffer, error) {
+	res, err := e.client.Get(index, id, e.client.Get.WithContext(ctx))
+
+	if err != nil {
+		return nil, eris.Wrapf(err, "")
+	}
+	defer res.Body.Close()
+	if res.IsError() {
+		return nil, eris.Wrapf(err, "")
+	}
+
+	bufResponse := new(bytes.Buffer)
+	bufResponse.ReadFrom(res.Body)
+	return bufResponse, nil
+}

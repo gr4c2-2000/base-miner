@@ -1,6 +1,6 @@
 package elasticsearch
 
-type ResposeES struct {
+type GenericResponse struct {
 	Hits        Hits        `json:"hits"`
 	Aggregation Aggregation `json:"aggregations"`
 }

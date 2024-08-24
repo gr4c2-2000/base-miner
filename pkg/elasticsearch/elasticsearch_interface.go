@@ -16,6 +16,7 @@ type ElasticSearchInterface interface {
 	Search(ctx context.Context, index string, docType string, query io.Reader) (*bytes.Buffer, error)
 	Replace(ctx context.Context, index string, docType string, id string, document io.Reader) error
 	Create(ctx context.Context, index string, docType string, document io.Reader) error
+	GetById(ctx context.Context, index string, docType string, id string) (*bytes.Buffer, error)
 	getDialerContext() func(ctx context.Context, network, address string) (net.Conn, error)
 	BulkIndexDocuments(ctx context.Context, index string, docType string, documents []map[string]interface{}) error
 	setConnection()
